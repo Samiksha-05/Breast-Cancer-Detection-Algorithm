@@ -1,0 +1,31 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+data_set = pd.read_csv('breast cancer.csv')
+X = data_set.iloc[:, :-1].values
+y = data_set.iloc[:, -1].values
+
+from sklearn.impute import SimpleImputer
+imputer = SimpleImputer(missing_values = np.nan, strategy = 'mean')
+
+X = imputer.fit_transform(X)
+if np.isnan(y).any():
+    y_imputer = SimpleImputer(strategy='most_frequent')
+    y = y_imputer.fit_transform(y.reshape(-1, 1)).ravel()
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 42)
+
+from sklearn.linear_model import LogisticRegression
+classifier=LogisticRegression(random_state=42)
+classifier.fit(X_train,y_train)
+
+from sklearn.metrics import confusion_matrix,accuracy_score
+y_pred=classifier.predict(X_test)
+cm=confusion_matrix(y_test,y_pred) 
+print(cm)
+accuracy_score(y_test,y_pred)   # accuracy score = 0.9239766081871345
+
+# CONFUSION MATRIX 
+# [[105   6]
+[  7  53]]
